@@ -1,7 +1,7 @@
 from room import Room
 from player import Player
 from world import World
-
+from util import Queue
 import random
 from ast import literal_eval
 
@@ -27,7 +27,46 @@ player = Player(world.starting_room)
 
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
+
+# #get opposite direction 
+# def get_opposite_direction(direction):
+#   if direction == 'n':
+#     return 's'
+#   elif direction == 's':
+#     return 'n'
+#   elif direction == 'w':
+#     return 'e'
+#   elif direction == 'e':
+#     return 'w'
+  
 traversal_path = []
+
+universe = {}
+
+def traverse_path(player, moves):
+  #instantiate a BFS
+  q = Queue()
+  #add first room to q
+  q.enqueue([player.current_room.id])
+  visited = set()
+  
+  while q.size() > 0:
+    path = q.dequeue()
+    latest_path = path[-1]
+    
+    if latest_path  not in visited:
+      visited.add(latest_path)
+      
+      for exit in universe[latest_path]:
+        if universe[latest_path][exit] == '?':
+          return path
+        else:
+          explored = list(path)
+          explored.append(universe[latest_path][exit])
+          q.enqueue(explored)
+  return []
+
+
 
 
 
@@ -47,16 +86,15 @@ else:
     print(f"{len(room_graph) - len(visited_rooms)} unvisited rooms")
 
 
-
-#######
+######
 # UNCOMMENT TO WALK AROUND
-#######
+######
 player.current_room.print_room_description(player)
 while True:
-    cmds = input("-> ").lower().split(" ")
-    if cmds[0] in ["n", "s", "e", "w"]:
-        player.travel(cmds[0], True)
-    elif cmds[0] == "q":
-        break
-    else:
-        print("I did not understand that command.")
+   cmds = input("-> ").lower().split(" ")
+   if cmds[0] in ["n", "s", "e", "w"]:
+       player.travel(cmds[0], True)
+   elif cmds[0] == "q":
+       break
+   else:
+       print("I did not understand that command.")
