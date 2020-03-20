@@ -54,7 +54,7 @@ def traverse_path(player, moves):
     path = q.dequeue()
     latest_path = path[-1]
     
-    if latest_path  not in visited:
+    if latest_path not in visited:
       visited.add(latest_path)
       
       for exit in universe[latest_path]:
@@ -68,7 +68,7 @@ def traverse_path(player, moves):
 
 #uncharted paths method
 
-def uncharted_path(play,new_moves):
+def uncharted_path(player,new_moves):
   exits = universe[player.current_room.id]
   uncharted = []
   
@@ -81,19 +81,46 @@ def uncharted_path(play,new_moves):
     new_path = traverse_path(player, new_moves)
     new_room = player.current_room.id
     
-    for room in uncharted:
+    for room in new_path:
       #append uncharted exits to new moves
       for direction in universe[new_room]:
-        if universe[newroom][direction] == room:
+        if universe[new_room][direction] == room:
           new_moves.enqueue(direction)
           new_room = room
           break 
   #access uncharted exits randomly
   else:
     new_moves.enqueue(uncharted[random.randint(0, len(uncharted) - 1)])
-    
+
+#uncharted rooms
+uncharted_room = {}
+for direction in player.current_room.get_exits():
+  uncharted_room[direction] = '?'
+
+universe[world.starting_room.id] = uncharted_room
+new_moves = Queue()
+uncharted_path(player, new_moves)
+
+oppposite_direction = { 'n' : 's', 's': 'n', 'e': 'w', 'w': 'e'}
+
+while new_moves.size() > 0: 
+  start = player.current_room.id
+  move = new_moves.dequeue()
+  player.travel(move)
+  traversal_path.append(move)
+  next_room = player.current_room.id
+  universe[start][move] = next_room
   
+  if next_room not in universe:
+    universe[next_room] = {}
     
+    for exit in player.current_room.get_exits():
+      universe[next_room][exit] = '?'
+  #set first room to follow opposite direction
+  universe[next_room][oppposite_direction[move]] = start
+  
+  if new_moves.size() == 0:
+    uncharted_path(player, new_moves)    
       
     
 
