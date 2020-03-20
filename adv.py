@@ -66,8 +66,36 @@ def traverse_path(player, moves):
           q.enqueue(explored)
   return []
 
+#uncharted paths method
 
-
+def uncharted_path(play,new_moves):
+  exits = universe[player.current_room.id]
+  uncharted = []
+  
+  for direction in exits:
+    if exits[direction] == '?':
+      #append to uncharted in order to be traversed 
+      uncharted.append(direction)
+  
+  if len(uncharted) == 0:
+    new_path = traverse_path(player, new_moves)
+    new_room = player.current_room.id
+    
+    for room in uncharted:
+      #append uncharted exits to new moves
+      for direction in universe[new_room]:
+        if universe[newroom][direction] == room:
+          new_moves.enqueue(direction)
+          new_room = room
+          break 
+  #access uncharted exits randomly
+  else:
+    new_moves.enqueue(uncharted[random.randint(0, len(uncharted) - 1)])
+    
+  
+    
+      
+    
 
 
 # TRAVERSAL TEST
